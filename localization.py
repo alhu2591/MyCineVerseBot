@@ -8,7 +8,6 @@ translations = {}
 
 def load_translations():
     """يحمل كل ملفات اللغات من مجلد locales باستخدام مسار مطلق وآمن."""
-    # --- [تصحيح] تحديد المسار الصحيح لمجلد locales ---
     base_dir = os.path.abspath(os.path.dirname(__file__))
     locales_dir = os.path.join(base_dir, 'locales')
     
@@ -27,21 +26,18 @@ def load_translations():
                 logger.error(f"Failed to load language file {filename}: {e}")
 
 def get_string(lang_code, key, **kwargs):
-    """
-    يجلب النص المترجم بناءً على لغة المستخدم والمفتاح.
-    """
+    """يجلب النص المترجم بناءً على لغة المستخدم والمفتاح."""
     lang_to_use = lang_code if lang_code in translations else 'en'
     
-    # Support for nested keys like "journey.mood_prompt"
     keys = key.split('.')
     text = translations.get(lang_to_use, {})
     for k in keys:
         text = text.get(k)
         if text is None:
-            return f"_{key}_" # Return key as placeholder if not found
+            return f"_{key}_"
     
     try:
         return text.format(**kwargs)
     except KeyError as e:
-        logger.warning(f"Formatting key {e} not found in string for key '{key}' in lang '{lang_to_use}'")
+        logger.warning(f"Formatting key {e} not found for '{key}' in lang '{lang_to_use}'")
         return text

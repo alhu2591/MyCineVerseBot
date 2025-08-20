@@ -8,11 +8,9 @@ tmdb = TMDb()
 tmdb.api_key = config.TMDB_API_KEY
 
 def search_media_by_title(title, lang_code='ar'):
-    """يبحث عن فيلم أو مسلسل بالاسم."""
     try:
         tmdb.language = lang_code
         search = Search()
-        # Search for movies first, then TV shows
         results = search.search_movies(title)
         if not results:
             results = search.search_tv(title)

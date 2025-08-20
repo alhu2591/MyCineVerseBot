@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
-import config, database, localization
+import config, database, localization, scheduler
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-# --- [تصحيح] إضافة المكتبات الناقصة ---
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -45,8 +44,17 @@ async def handle_language_callback(update: Update, context: ContextTypes.DEFAULT
     text = localization.get_string(lang_code, "language_changed")
     await query.edit_message_text(text)
 
+# --- أمر المدير الجديد ---
+async def force_check_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """يبدأ عملية الفحص يدوياً (للمدير فقط)."""
+    if update.effective_user.id == config.ADMIN_CHAT_ID:
+        await update.message.reply_text("تمام! سأبدأ عملية الفحص اليدوي الآن...")
+        # جدولة مهمة لتعمل مرة واحدة فوراً
+        context.job_queue.run_once(scheduler.check_updates, 0, name='force_check')
+    else:
+        await update.message.reply_text("عذراً، هذا الأمر مخصص للمدير فقط.")
+
 def main():
-    # Use a more robust check for environment variables
     if not config.TELEGRAM_TOKEN or not config.TMDB_API_KEY:
         logger.error("‼️ خطأ: الرجاء تعبئة الإعدادات في ملف config.py أو في متغيرات البيئة"); return
     
@@ -72,8 +80,14 @@ def main():
     app.add_handler(CommandHandler("language", language_command))
     app.add_handler(journey_handler)
     app.add_handler(CallbackQueryHandler(handle_language_callback, pattern='^set_lang_'))
+    
+    # إضافة أمر المدير
+    app.add_handler(CommandHandler("force_check", force_check_command))
 
-    logger.info("Bot is running..."); app.run_polling()
+    # --- إضافة المهمة المجدولة ---
+    app.job_queue.run_repeating(scheduler.check_updates, interval=3600, first=15, name='hourly_check')
+
+    logger.info("Bot is running with interactive journeys and scrapers..."); app.run_polling()
 
 if __name__ == '__main__':
     main()

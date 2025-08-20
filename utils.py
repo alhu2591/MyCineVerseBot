@@ -21,8 +21,7 @@ def build_message_and_buttons(details, watch_link=None, source=None, lang_code='
     if watch_link:
         buttons.append([InlineKeyboardButton("🍿 شاهد الآن", url=watch_link)])
     
-    # Add the "Back to Journey" button for the interactive feature
-    if not watch_link:
+    if not watch_link: # For interactive journey
          buttons.append([InlineKeyboardButton("Back to Journey", callback_data="journey_start_over")])
 
     return message, InlineKeyboardMarkup(buttons) if buttons else None

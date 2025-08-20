@@ -22,7 +22,6 @@ def search_media_by_title(title, lang_code='ar'):
         return []
 
 def discover_media(genre_id, keyword_id=None, lang_code='en'):
-    # ... (This function remains the same)
     discover = Discover()
     params = {'with_genres': str(genre_id), 'sort_by': 'popularity.desc', 'language': lang_code}
     if keyword_id:
@@ -30,7 +29,6 @@ def discover_media(genre_id, keyword_id=None, lang_code='en'):
     return discover.discover_movies(params)
 
 def get_details(tmdb_id, item_type, lang_code='en'):
-    # ... (This function remains the same)
     try:
         tmdb.language = lang_code
         media = Movie() if item_type == 'movie' else TV()

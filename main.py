@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 import logging
-import config, database, localization, scheduler
+import config, database, localization
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+# --- [تصحيح] إضافة المكتبات الناقصة ---
 from telegram.ext import (
     Application,
     CommandHandler,
     CallbackQueryHandler,
     ConversationHandler,
+    ContextTypes 
 )
 from interactive_journeys import (
     start_journey, handle_mood, handle_path, handle_refinement, cancel_journey,
@@ -44,8 +46,9 @@ async def handle_language_callback(update: Update, context: ContextTypes.DEFAULT
     await query.edit_message_text(text)
 
 def main():
-    if 'ضع' in config.TELEGRAM_TOKEN or 'ضع' in config.TMDB_API_KEY:
-        logger.error("‼️ خطأ: الرجاء تعبئة الإعدادات في ملف config.py"); return
+    # Use a more robust check for environment variables
+    if not config.TELEGRAM_TOKEN or not config.TMDB_API_KEY:
+        logger.error("‼️ خطأ: الرجاء تعبئة الإعدادات في ملف config.py أو في متغيرات البيئة"); return
     
     localization.load_translations()
     database.initialize_db()
@@ -70,11 +73,7 @@ def main():
     app.add_handler(journey_handler)
     app.add_handler(CallbackQueryHandler(handle_language_callback, pattern='^set_lang_'))
 
-    # --- إضافة المهمة المجدولة ---
-    # سيعمل لأول مرة بعد 15 ثانية، ثم كل ساعة (3600 ثانية)
-    app.job_queue.run_repeating(scheduler.check_updates, interval=3600, first=15)
-
-    logger.info("Bot is running with interactive journeys and scrapers..."); app.run_polling()
+    logger.info("Bot is running..."); app.run_polling()
 
 if __name__ == '__main__':
     main()

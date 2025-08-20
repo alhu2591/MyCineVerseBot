@@ -1,5 +1,5 @@
 python-telegram-bot
-tmdbvapi
+tmdbv3api
 requests
 beautifulsoup4
 aiohttp

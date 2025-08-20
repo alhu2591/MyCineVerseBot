@@ -16,7 +16,6 @@ def initialize_db():
             language TEXT DEFAULT 'ar'
         )
     ''')
-    # جدول لتتبع الروابط التي تم إرسالها
     cursor.execute('CREATE TABLE IF NOT EXISTS sent_items (link TEXT PRIMARY KEY)')
     conn.commit()
     conn.close()
@@ -47,9 +46,7 @@ def set_user_language(user_id, lang_code):
     conn.commit()
     conn.close()
 
-# --- دوال خاصة بسحب البيانات ---
 def link_exists(link):
-    """يتحقق مما إذا كان الرابط قد تم إرساله من قبل."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("SELECT 1 FROM sent_items WHERE link = ?", (link,))
@@ -58,7 +55,6 @@ def link_exists(link):
     return exists
 
 def add_link(link):
-    """يضيف رابطاً جديداً إلى قاعدة البيانات لتجنب تكراره."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     try:

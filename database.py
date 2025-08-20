@@ -16,9 +16,11 @@ def initialize_db():
             language TEXT DEFAULT 'ar'
         )
     ''')
+    # جدول لتتبع الروابط التي تم إرسالها
+    cursor.execute('CREATE TABLE IF NOT EXISTS sent_items (link TEXT PRIMARY KEY)')
     conn.commit()
     conn.close()
-    logger.info("Database initialized with language support.")
+    logger.info("Database initialized with scrapers support.")
 
 def add_or_update_user(user_id, first_name):
     conn = sqlite3.connect(DB_NAME)
@@ -28,22 +30,41 @@ def add_or_update_user(user_id, first_name):
     conn.close()
 
 def get_user_language(user_id):
-    """يجلب اللغة المفضلة للمستخدم."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("SELECT language FROM users WHERE user_id = ?", (user_id,))
     result = cursor.fetchone()
     conn.close()
-    # Add a default user entry if not exists
     if not result:
         add_or_update_user(user_id, "User")
         return 'ar'
     return result[0]
 
 def set_user_language(user_id, lang_code):
-    """يحدد اللغة المفضلة للمستخدم."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     cursor.execute("UPDATE users SET language = ? WHERE user_id = ?", (lang_code, user_id))
     conn.commit()
     conn.close()
+
+# --- دوال خاصة بسحب البيانات ---
+def link_exists(link):
+    """يتحقق مما إذا كان الرابط قد تم إرساله من قبل."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    cursor.execute("SELECT 1 FROM sent_items WHERE link = ?", (link,))
+    exists = cursor.fetchone() is not None
+    conn.close()
+    return exists
+
+def add_link(link):
+    """يضيف رابطاً جديداً إلى قاعدة البيانات لتجنب تكراره."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("INSERT INTO sent_items (link) VALUES (?)", (link,))
+        conn.commit()
+    except sqlite3.IntegrityError:
+        logger.warning(f"Link {link} already exists in DB.")
+    finally:
+        conn.close()

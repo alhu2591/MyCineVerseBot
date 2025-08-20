@@ -7,8 +7,11 @@ logger = logging.getLogger(__name__)
 translations = {}
 
 def load_translations():
-    """يحمل كل ملفات اللغات من مجلد locales."""
-    locales_dir = 'locales'
+    """يحمل كل ملفات اللغات من مجلد locales باستخدام مسار مطلق وآمن."""
+    # --- [تصحيح] تحديد المسار الصحيح لمجلد locales ---
+    base_dir = os.path.abspath(os.path.dirname(__file__))
+    locales_dir = os.path.join(base_dir, 'locales')
+    
     if not os.path.exists(locales_dir):
         logger.error(f"Locales directory '{locales_dir}' not found.")
         return

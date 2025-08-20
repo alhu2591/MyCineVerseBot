@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 
-def build_message_and_buttons(details, lang_code='ar'):
-    """Builds the final message and buttons with full details."""
+def build_message_and_buttons(details, watch_link=None, source=None, lang_code='ar'):
+    """يبني الرسالة النهائية مع دعم روابط المشاهدة والمصدر."""
     title = details.title if hasattr(details, 'title') else details.name
     year = (details.release_date or details.first_air_date or "").split('-')[0]
     rating = round(details.vote_average, 1)
@@ -14,7 +14,15 @@ def build_message_and_buttons(details, lang_code='ar'):
     message += f"🎭 **{genres}**\n\n"
     message += f"📝 {overview}"
 
-    # In a real scenario, you'd add like/subscribe buttons etc. here
-    keyboard = InlineKeyboardMarkup([[InlineKeyboardButton("Back to Journey", callback_data="journey_start_over")]])
+    if source:
+        message += f"\n\n**المصدر:** {source}"
+
+    buttons = []
+    if watch_link:
+        buttons.append([InlineKeyboardButton("🍿 شاهد الآن", url=watch_link)])
     
-    return message, keyboard
+    # Add the "Back to Journey" button for the interactive feature
+    if not watch_link:
+         buttons.append([InlineKeyboardButton("Back to Journey", callback_data="journey_start_over")])
+
+    return message, InlineKeyboardMarkup(buttons) if buttons else None

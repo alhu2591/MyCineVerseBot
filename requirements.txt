@@ -1,5 +1,8 @@
-python-telegram-bot[job-queue]
-tmdbv3api
-requests
-beautifulsoup4
-aiohttp
+python-telegram-bot[job-queue]==22.3
+requests==2.32.5
+beautifulsoup4==4.13.4
+aiohttp==3.12.15
+httpx==0.28.1
+tmdbv3api==1.9.0
+APScheduler==3.11.0
+schedule==1.2.0

@@ -1,0 +1,57 @@
+{
+    "welcome_message": "Welcome to the Movies Bot! Use /journey to start discovering your perfect movie, or /language to change the language.",
+    "language_select": "Please select your language:",
+    "language_changed": "✅ Language changed to English.",
+    "journey": {
+        "mood_prompt": "Welcome to your cinematic journey. How are you feeling tonight?",
+        "finding_result": "🧭 One moment, finding a cinematic gem for you...",
+        "no_result": "Sorry, I couldn't find anything at the end of this journey. Try another path!",
+        "cancelled": "Journey cancelled. You can start a new one anytime with /journey.",
+        "moods": {
+            "adventure": {
+                "label": " Adventurous 🗺️",
+                "prompt": "Excellent choice! Where does your adventurous spirit take you?",
+                "paths": {
+                    "galaxy": {
+                        "label": "To a distant galaxy",
+                        "prompt": "In the vastness of space, what do you seek?",
+                        "refinements": {
+                            "epic": { "label": "A space epic" },
+                            "horror": { "label": "Cosmic horror" }
+                        }
+                    },
+                    "jungle": {
+                        "label": "To a lost jungle",
+                        "prompt": "Deep in the jungle, what is your goal?",
+                        "refinements": {
+                            "treasure": { "label": "Treasure hunting" },
+                            "survival": { "label": "Surviving at all costs" }
+                        }
+                    }
+                }
+            },
+            "laugh": {
+                "label": " In need of a laugh 😂",
+                "prompt": "Time for fun! What kind of comedy do you prefer?",
+                "paths": {
+                    "social": {
+                        "label": "Social Comedy",
+                        "prompt": "What piques your interest more?",
+                        "refinements": {
+                            "satire": { "label": "Satirical critique" },
+                            "romcom": { "label": "A cute romance" }
+                        }
+                    },
+                    "absurd": {
+                        "label": "Absurdist Comedy",
+                        "prompt": "Choose your preferred brand of chaos:",
+                        "refinements": {
+                            "dark": { "label": "Dark comedy" },
+                            "slapstick": { "label": "Awkward situations" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

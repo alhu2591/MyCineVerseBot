@@ -2,11 +2,13 @@
 import logging
 import config, database, localization
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+# --- [تصحيح] إضافة المكتبات الناقصة ---
 from telegram.ext import (
     Application,
     CommandHandler,
     CallbackQueryHandler,
     ConversationHandler,
+    ContextTypes 
 )
 from interactive_journeys import (
     start_journey, handle_mood, handle_path, handle_refinement, cancel_journey,
@@ -44,8 +46,8 @@ async def handle_language_callback(update: Update, context: ContextTypes.DEFAULT
     await query.edit_message_text(text)
 
 def main():
-    if 'ضع' in config.TELEGRAM_TOKEN or 'ضع' in config.TMDB_API_KEY:
-        logger.error("‼️ خطأ: الرجاء تعبئة الإعدادات في ملف config.py"); return
+    if not config.TELEGRAM_TOKEN or not config.TMDB_API_KEY:
+        logger.error("‼️ خطأ: الرجاء تعبئة الإعدادات في ملف config.py أو في متغيرات البيئة"); return
     
     localization.load_translations()
     database.initialize_db()

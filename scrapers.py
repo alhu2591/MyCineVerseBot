@@ -5,20 +5,30 @@ import logging
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 import database
+import config # استيراد الإعدادات الجديدة
 
 logger = logging.getLogger(__name__)
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36'
-}
 
 async def fetch_html(session, url):
+    """
+    يجلب محتوى الصفحة باستخدام خدمة Scraping API لتجاوز الحظر.
+    """
+    if not config.SCRAPER_API_KEY:
+        logger.error("Scraper API Key is not configured.")
+        return None
+        
+    # بناء رابط الطلب عبر الخدمة الوسيطة
+    proxy_url = f'http://api.scraperapi.com?api_key={config.SCRAPER_API_KEY}&url={url}'
+    
     try:
-        async with session.get(url, headers=HEADERS, timeout=20, ssl=False) as response:
+        async with session.get(proxy_url, timeout=60) as response: # زيادة مدة الانتظار
             response.raise_for_status()
             return await response.text()
     except Exception as e:
-        logger.error(f"Failed to fetch {url}: {e}")
+        logger.error(f"Failed to fetch {url} via ScraperAPI: {e}")
         return None
+
+# --- دوال سحب البيانات لكل موقع (تبقى كما هي) ---
 
 async def scrape_wecima(session):
     site_url = "https://wecima.click/"
@@ -38,11 +48,17 @@ async def scrape_wecima(session):
                 items_list.append({'title': title, 'link': link, 'source': 'WeCima'})
     return 'WeCima', items_list
 
+# ... (بقية دوال السحب)
+
 async def run_all_scrapers():
-    logger.info("Running all scrapers...")
+    """يشغل كل دوال السحب بشكل متزامن ويجمع النتائج."""
+    logger.info("Running all scrapers via ScraperAPI...")
     all_new_items = []
     async with aiohttp.ClientSession() as session:
-        tasks = [scrape_wecima(session)] 
+        tasks = [
+            scrape_wecima(session),
+            # ... (بقية المواقع)
+        ] 
         results = await asyncio.gather(*tasks, return_exceptions=True)
     
     for res in results:
